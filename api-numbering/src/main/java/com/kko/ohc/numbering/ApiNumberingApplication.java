@@ -1,0 +1,13 @@
+package com.kko.ohc.numbering;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class ApiNumberingApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(ApiNumberingApplication.class, args);
+	}
+
+}
