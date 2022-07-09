@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kko.ohc.numbering.svc.ApiNumberingGuidSvc;
@@ -44,17 +45,26 @@ public class ApiNumberingMainCtl {
 	 *    - 생성 룰은 직관성을 최우선으로 고려하여 직접 정의해주세요. 
 	 *    - GUID는 중복이 발생하지 않아야 합니다.
 	 *    
+	 * @param guid - 같은 GUID에 연속번호를 추가하려할때 필
 	 * @return
 	 */
 	@RequestMapping("/guid")
-	public String guid() {
+	public String guid(
+			@RequestParam(value="guid", required=false) String guid
+			) {
 		logger.info("------------------------------------------");
 		logger.info("--- APP NAME : /guid");
-		String retValue = guidSvc.doService();
+		logger.info("--- PARAM [guid] : {}", guid);
+		String retValue = "";
+		if ( guid == null ) {
+			retValue = guidSvc.createGuid();
+		} else {
+			retValue = guidSvc.nextGuid(guid);
+		}
 		logger.info("------------------------------------------");
 		return retValue;
 	}
-
+	
 	/**
 	 * 2) Sequence 생성 
 	 *    - 업무요건상 하나의 일련번호를 다수의 서버에서 증번하여 획득이 필요합니다. 
@@ -75,7 +85,20 @@ public class ApiNumberingMainCtl {
 	public String sequence() {
 		logger.info("------------------------------------------");
 		logger.info("--- APP NAME : /sequence");
-		String retValue = seqSvc.doService();
+		String retValue = seqSvc.next();
+		logger.info("------------------------------------------");
+		return retValue;
+	}
+	
+	/**
+	 * 현재 시퀀스 조회.
+	 * @return
+	 */
+	@RequestMapping("/current-sequence")
+	public String currentSequence() {
+		logger.info("------------------------------------------");
+		logger.info("--- APP NAME : /current-sequence");
+		String retValue = seqSvc.current();
 		logger.info("------------------------------------------");
 		return retValue;
 	}
