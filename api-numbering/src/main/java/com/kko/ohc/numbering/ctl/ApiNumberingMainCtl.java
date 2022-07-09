@@ -46,7 +46,7 @@ public class ApiNumberingMainCtl {
 	 *    - GUID는 중복이 발생하지 않아야 합니다.
 	 *    
 	 * @param 	guid 		- 같은 GUID에 연속번호를 추가하려할때 넘겨주어야합니다.
-	 * @param	systemCode	- 요청 시스템으로부터 2자리 시스템코드를 받습니다.
+	 * @param	systemCode	- 요청 시스템으로부터 2자리 시스템코드를 받습니다. 
 	 * @return
 	 */
 	@RequestMapping("/guid")
