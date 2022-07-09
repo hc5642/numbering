@@ -51,7 +51,7 @@ public class ApiNumberingMainCtl {
 	 */
 	@RequestMapping("/guid")
 	public String guid(
-			@RequestParam(value="hostname", required=true) String hostname,
+			@RequestParam(value="hostname", required=false, defaultValue="hyonchul") String hostname,
 			@RequestParam(value="guid", required=false) String guid
 			) {
 		logger.info("------------------------------------------");
