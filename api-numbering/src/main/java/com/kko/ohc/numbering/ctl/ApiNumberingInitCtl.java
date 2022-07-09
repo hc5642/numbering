@@ -12,6 +12,7 @@ public class ApiNumberingInitCtl {
 	
 	@Autowired
 	private ApiNumberingGuidDao guidDao;
+	@Autowired
 	private ApiNumberingSequenceDao seqDao;
 	
 	@RequestMapping("/init-guid-table")

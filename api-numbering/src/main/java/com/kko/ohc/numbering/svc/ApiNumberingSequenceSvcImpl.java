@@ -26,13 +26,14 @@ public class ApiNumberingSequenceSvcImpl implements ApiNumberingSequenceSvc {
 	
 	@Override
 	public String current() {
-		return lastestSequence;
+		return ApiNumberingSequenceSvcImpl.lastestSequence;
 	}
 
 	@Override
 	public synchronized String next() {
-		// TODO Auto-generated method stub
-		return "sequence";
+		double result = seqDao.getNext();
+		ApiNumberingSequenceSvcImpl.lastestSequence = new Double(result).toString();
+		return ApiNumberingSequenceSvcImpl.lastestSequence;
 	}
 
 }

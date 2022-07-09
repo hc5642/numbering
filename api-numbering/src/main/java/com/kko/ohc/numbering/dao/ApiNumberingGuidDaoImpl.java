@@ -30,11 +30,11 @@ public class ApiNumberingGuidDaoImpl implements ApiNumberingGuidDao {
 	@Override
 	public int getNext(String guid) {
 		String sql = "select seqnum from api_guid where guid=?";
-		logger.info("--- GET-NEXT SELECT SQL : {}" , sql);
+		logger.debug("--- GET-NEXT SELECT SQL : {}" , sql);
 		int maxValue = jdbcTemplate.queryForObject(sql, Integer.class, guid);
 		logger.info("--- GET-NEXT SELECT RESULT : {}" , maxValue);
 		String update = "update api_guid set seqnum=? where guid=?";
-		logger.info("--- GET-NEXT UPDATE SQL : {}" , update);
+		logger.debug("--- GET-NEXT UPDATE SQL : {}" , update);
 		int updateResult = jdbcTemplate.update(update, maxValue+1, guid);
 		logger.info("--- GET-NEXT UPDATE RESULT : {}" , updateResult);
 		return maxValue+1;
