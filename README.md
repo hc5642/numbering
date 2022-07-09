@@ -4,7 +4,7 @@
 
 # 어플리케이션 기동 스크립트를 작성해주시고, 기동방법을 기재해주세요
 
-* (기동 스크립트) java -jar api-numbering-0.0.1-SNAPSHOT.jar --spring.profiles.active=local - jar 파일이 위치한 경로에서 local 프로필 옵션을 주고 기동합니다. - 최초 기동시 DB가 자동으로 같은 경로에 생성되게 구성했습니다.(DB파일명:  sqliteLocal.db)
+* (기동 스크립트) java -jar api-numbering-0.0.1-SNAPSHOT.jar - 최초 기동시 DB가 자동으로 같은 경로에 생성되게 구성했습니다.(DB파일명:  sqliteLocal.db)
 * (프로그램소스 README.md) https://github.com/hc5642/numbering/blob/main/README.md
 * (프로그램소스 clone URL) https://github.com/hc5642/numbering.git
 
