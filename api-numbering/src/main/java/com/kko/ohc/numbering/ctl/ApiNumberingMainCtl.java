@@ -45,21 +45,26 @@ public class ApiNumberingMainCtl {
 	 *    - 생성 룰은 직관성을 최우선으로 고려하여 직접 정의해주세요. 
 	 *    - GUID는 중복이 발생하지 않아야 합니다.
 	 *    
-	 * @param guid - 같은 GUID에 연속번호를 추가하려할때 필
+	 * @param 	guid 		- 같은 GUID에 연속번호를 추가하려할때 넘겨주어야합니다.
+	 * @param	systemCode	- 요청 시스템으로부터 2자리 시스템코드를 받습니다.
 	 * @return
 	 */
 	@RequestMapping("/guid")
 	public String guid(
+			@RequestParam(value="hostname", required=true) String hostname,
 			@RequestParam(value="guid", required=false) String guid
 			) {
 		logger.info("------------------------------------------");
 		logger.info("--- APP NAME : /guid");
+		logger.info("--- PARAM [hostname] : {}", hostname);
 		logger.info("--- PARAM [guid] : {}", guid);
+		
 		String retValue = "";
+		hostname = hostname.toUpperCase();
 		if ( guid == null ) {
-			retValue = guidSvc.createGuid();
+			retValue = guidSvc.createGuid(hostname);
 		} else {
-			retValue = guidSvc.nextGuid(guid);
+			retValue = guidSvc.nextGuid(guid, hostname);
 		}
 		logger.info("------------------------------------------");
 		return retValue;
@@ -91,7 +96,7 @@ public class ApiNumberingMainCtl {
 	}
 	
 	/**
-	 * 현재 시퀀스 조회.
+	 * 마지막 채번된 시퀀스 조회.
 	 * @return
 	 */
 	@RequestMapping("/current-sequence")

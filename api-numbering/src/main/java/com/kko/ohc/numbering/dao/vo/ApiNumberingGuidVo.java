@@ -4,6 +4,7 @@ public class ApiNumberingGuidVo {
 	
 	private String guid;
 	private int seqNum;
+	
 	public String getGuid() {
 		return guid;
 	}

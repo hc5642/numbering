@@ -1,9 +1,6 @@
 package com.kko.ohc.numbering.svc;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -18,59 +15,66 @@ import com.kko.ohc.numbering.dao.ApiNumberingGuidDao;
  * GUID 채번 서비스 
  * @author hyonchuloh
  * 
- * guid 구성 = yyyyMMddHHmmss(14) + hostname(8) + random(4) + seqnum(4)
+ * guid 구성 = yyMMddHHmmssSS(14) + hostname(8) + random(4) + systemCode + seqnum(2)
  * 
- * 1) 최초 인풋값이 없는 경우 GUID를 새롭게 채번한다. (최초채번시 전행연속번호는 00)
- *    - 최초 채번시에는 관리테이블에 insert 하지 아니한다.
+ * 1) GUID를 새롭게 채번한다. (최초 채번시 연속번호는 0000)
  *    
- * 2) 인풋값이 존재하는 경우 해당 GUID에 전행연속번호를 max+1 하여 채번한다.
+ * 2) 해당 GUID에 연속번호를 max+1 하여 채번한다.
  *    - 인풋값이 존재하는 경우는 관리테이블에서 max 연속번호를 조회하여 next 값을 가져오며 테이블에 update 한다.
  */
 @Service
 public class ApiNumberingGuidSvcImpl implements ApiNumberingGuidSvc {
 	
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	@Autowired
 	private ApiNumberingGuidDao dao;
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyMMddHHmmssSSS");
-	private DecimalFormat df = new DecimalFormat("0000");
-		
+	private DecimalFormat df = new DecimalFormat("00");
+	private DecimalFormat df2 = new DecimalFormat("0000");
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	
+	/**
+	 * GUID 를 최초로 생성합니다.
+	 * @param hostname	- 호스트네임 8자리를 넘겨받습니다.
+	 */
 	@Override
-	public String createGuid() {
+	public String createGuid(String hostname) {
+		// 날짜 조립
 		String yyMMddHHmmssSS = sdf.format(new Date());									
 		yyMMddHHmmssSS = yyMMddHHmmssSS.substring(0, 14);
-		String hostname = getHostname().toUpperCase();
+		// 호스트네임 정비
+		if ( hostname.length() > 8 ) {
+			hostname = hostname.substring(hostname.length()-8);
+		} else if ( hostname.length() < 8 ) {
+			hostname = hostname + hostname.substring(8-hostname.length());
+		}
+		// 랜덤값 4자리 추출
 		String random = getRandNumber();
-		String retValue = yyMMddHHmmssSS + hostname + random + "0000";
-		logger.info("--- CREATE GUID : {}", retValue);
-		dao.insert(retValue);
+		// 최종 조립
+		String retValue = yyMMddHHmmssSS + hostname + random + hostname.substring(0,2) + "00";
+		// DB 저장
+		logger.info("--- GUID [{}], DB INSERT [{}]", retValue ,dao.insert(retValue));
 		return retValue;
 	}
 
+	/**
+	 * 기존GUID를 받아 뒤에있는 연속번호를 증가시킵니다. (synchronized)
+	 * @param	guid 		- 30자리의 FULL GUID를 넘겨받습니다.
+	 * @param	systemCode	- 요청시스템으로부터 2자리 시스템코드를 넘겨받습니다.
+	 */
 	@Override
-	public synchronized String nextGuid(String guid) {
-		String guid_prifix = guid.substring(0,24);
+	public synchronized String nextGuid(String guid, String hostname) {
+		String guid_prifix = guid.substring(0,26);
 		int result = dao.getNext(guid_prifix);
-		logger.info("--- NEXT GUID : {}", guid_prifix + df.format(result));
-		return guid_prifix + df.format(result);
+		return guid_prifix + hostname.substring(0,2) + df.format(result);
 	}
 	
-	private String getHostname() {
-		String retValue = "DEFAULT1";
-		try {
-			retValue = InetAddress.getLocalHost().getHostName();
-			if ( retValue != null && retValue.length() > 8 ) {
-				retValue = retValue.substring(retValue.length()-8);
-			}
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
-		return retValue;
-	}
-	
+	/**
+	 * 4자리의 랜덤 숫자를 반환합니다.
+	 * @return
+	 */
 	private String getRandNumber() {
 		int rand = (int) (Math.random()*(9999));
-		return df.format(rand);
+		return df2.format(rand);
 	}
 
 }
