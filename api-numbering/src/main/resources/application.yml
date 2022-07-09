@@ -17,3 +17,16 @@ logging:
   level:
     root: info
     
+--- 
+
+spring:
+  config:
+    activate:
+      on-profile: default
+  datasource:
+    url: jdbc:sqlite:sqliteLocal.db
+    driver-class-name: org.sqlite.JDBC
+  
+logging:
+  level:
+    root: info

@@ -31,7 +31,13 @@ public class ApiNumberingSequenceDaoImpl implements ApiNumberingSequenceDao {
 	@Override
 	public double select() {
 		String date = sdf.format(new Date());
-		return jdbcTemplate.queryForObject("SELECT seqnum FROM api_sequence WHERE api_date=?", Double.class, date);
+		double maxValue = 0d;
+		try {
+			maxValue = jdbcTemplate.queryForObject("SELECT seqnum FROM api_sequence WHERE api_date=?", Double.class, date);
+		} catch ( IncorrectResultSizeDataAccessException irsdae ) { // 조회결과가 없는 경우
+			logger.info("--- 금일 시퀀스번호가 채번되지 않았습니다.", irsdae.getMessage());
+		}
+		return new Double(maxValue).doubleValue();
 	}
 
 	/**
